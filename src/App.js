@@ -1,25 +1,44 @@
-import logo from './logo.svg';
+import Searcher from './components/Searcher';
+import { Col } from 'antd';
+import PokemonCard from './components/PokemonCard';
+import PokemonList from './components/PokemonList';
+import Logo from './statics/logo.svg';
+import { connect } from 'react-redux';
 import './App.css';
+import { setPokemons as setPokemonsActions } from './actions';
+import { useEffect, useState } from 'react';
+import { getPokemons } from './api';
+import { setPokemons } from './actions';
 
-function App() {
+function App({pokemons, setPokemons }) {
+
+
+  useEffect( () => {
+    const fetchPokemons = async () => {
+      const pokemonRes = await getPokemons();
+      setPokemons(pokemonRes);
+    }
+
+    fetchPokemons();
+  }, []);
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Col span={8} offset={8}>
+        <img src={Logo} alt="logo"></img>
+      </Col>
+      <Col span={8} offset={8}>
+        <Searcher/></Col>
+        <PokemonList pokemons={pokemons}/>
     </div>
   );
 }
 
-export default App;
+const mapStateToProps = (state) => ({
+  pokemons: state.pokemons,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  setPokemons: (value) => dispatch(setPokemonsActions(value)) // se llama al disparador de redux y no directo
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
